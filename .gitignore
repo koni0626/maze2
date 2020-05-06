@@ -5,3 +5,4 @@ mysite/pyarticle/__pycache__
 *.pyc
 mysite/mysite_uwsgi.ini
 mysite/uwsgi_params
+mysite/maze_media

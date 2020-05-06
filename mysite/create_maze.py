@@ -12,7 +12,7 @@ from maze.Component.maze import MazeManager
 
 DB_PATH = "db.sqlite3"
 CREATE_MAZE_NUM = 100
-MEDIA_ROOT = r"./media"
+MEDIA_ROOT = r"./maze_media"
 
 if __name__ == '__main__':
     conn = sqlite3.connect(DB_PATH)

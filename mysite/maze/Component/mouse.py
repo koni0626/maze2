@@ -4,23 +4,18 @@ import json
 
 
 class Mouse(object):
-    def __init__(self, session, json_file):
+    def __init__(self, session, data):
         self.now_pos_x = session["mouse_pos_x"]
         self.now_pos_y = session["mouse_pos_y"]
         self.now_vec = session["mouse_vec"]
         self.memory = session["memory"]
-        self.img_list = ["/static/icon/icon_north.png",
-                         "/static/icon/icon_east.png",
-                         "/static/icon/icon_south.png",
-                         "/static/icon/icon_west.png"]
+        self.img_list = ["/maze_static/icon/icon_north.png",
+                         "/maze_static/icon/icon_east.png",
+                         "/maze_static/icon/icon_south.png",
+                         "/maze_static/icon/icon_west.png"]
         self.icon = self.img_list[self.now_vec]
-        self.data = self.load_map(json_file)
+        self.data = data
 
-    def load_map(self, json_file):
-        full_path = os.path.join("maze_media/maze/", json_file)
-        with open(full_path) as f:
-            data = json.load(f)
-        return data
 
     def get_mouse_icon(self, vec):
         return self.img_list[vec]
