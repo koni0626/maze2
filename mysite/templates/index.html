@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<style>
+h1 {
+  font-size:30px;
+  padding: .5em .75em;
+  margin-top:40px;
+  background-color: #f6f6f6;
+  border-radius: 6px;
+}
+</style>
+    <div class="row">
+        <div class="col-md-2 bg-light">
+        </div>
+        <div class="col-md-8">
+            <img src="{% static 'top.jpg' %}" class="img-fluid">
+            <h1>マイクロマウスシミュレーター</h1>
+            <div class="row">
+                <div class="col-md-6">
+                    <iframe width="560" height="315" align="center" src="https://www.youtube.com/embed/CLU1NJ4p8jQ" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </div>
+                <div class="col-md-6">
+                    <p>
+                        マイクロマウスのシミュレーションをドット絵ベースの簡単なインターフェースで実験できるシミュレーターβ版です。
+                    </p>
+                    <p>
+                        ResutfulAPIでマイクロマウスを操作します。RestfulAPIの仕様書はこちら。
+                    </p>
+                    <p>
+                        <button type="button" class="btn btn-primary">アカウントを作成する</button>
+                        <button type="button" class="btn btn-success">ログインする</button>
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2 bg-light">
+        </div>
+    </div>
+
+
+{% endblock %}

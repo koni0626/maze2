@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+               <h5 class="card-header text-center">ユーザ登録</h5>
+                <p class="card-text">
+                    <form method="post" novalidate>
+                        {% csrf_token %}
+                        {{form.as_p}}
+                        <!--
+                        http://strkita.hatenablog.com/entry/2017/08/17/232712
+                        ここのやり方で、djangoのフォームにbootstrapを適用できる。とりあえずユーザモデルを作ってから直す。
+                        -->
+                        <p class="text-center"><button type="submit" class="btn btn-primary">作成する</button></p>
+                    </form>
+                </p>
+            </div>
+        </div>
+    </div>
+{% endblock %}

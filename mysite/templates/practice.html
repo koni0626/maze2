@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<h3 class="pb-3 mb-4 font-italic bg-secondary text-white">
+    迷路{{record.id}}
+</h3>
+<div class="row">
+    <div class="col-md-6">
+        <table>
+          {% for rows in maze_data %}
+            <tr>
+            {% for data in rows %}
+                {% if data == 0.0 %}
+                    <td bgcolor="#ffffff" width="22" height="22"></td>
+                {% elif data == 2.0 %}
+                    <td bgcolor="#ff0000" width="22" height="22"></td>
+                {% elif data == 3.0 %}
+                    <td width="22" height="22"></td>
+                {% elif data == 4.0 %}
+                    <td width="22" height="22"><img src="{{mouse_icon}}" width="16"></td>
+                {% elif data == 5.0 %}
+                    <td bgcolor="#cccccc"  width="22" height="22"></td>
+                {% else %}
+                    <td bgcolor="#cccccc"  width="22" height="22"></td>
+                {% endif %}
+
+            {% endfor %}
+            <tr>
+        {% endfor %}
+        </table>
+    </div>
+
+    <div class="col-md-6">
+        <table>
+            <tr>
+                <td></td>
+                <td>
+                    <form action="{% url 'practice' record.id 2 %}" method="GET">
+                        {%csrf_token%}
+                        <input type="submit" class="btn btn-outline-secondary" value="北を向く">
+                    </form>
+                </td>
+                <td></td>
+            </tr>
+
+            <tr>
+                <td>
+                    <form action="{% url 'practice' record.id 5 %}" method="GET">
+                        {%csrf_token%}
+                        <input type="submit" class="btn btn-outline-secondary" value="西を向く">
+                    </form>
+                </td>
+                <td>
+                    <form action="{% url 'practice' record.id 1 %}" method="GET">
+                        {%csrf_token%}
+                        <input type="submit" class="btn btn-secondary" value="　進む　">
+                    </form>
+                </td>
+                <td>
+                     <form action="{% url 'practice' record.id 3 %}" method="GET">
+                        {%csrf_token%}
+                        <input type="submit" class="btn btn-outline-secondary" value="東を向く">
+                    </form>
+                </td>
+            </tr>
+
+            <tr>
+                <td></td>
+                <td>
+                    <form action="{% url 'practice' record.id 4 %}" method="GET">
+                        {%csrf_token%}
+                        <input type="submit" class="btn btn-outline-secondary" value="南を向く">
+                    </form>
+                </td>
+                <td></td>
+            </tr>
+        </table>
+        {{sensor}}
+        <form action="{% url 'practice' record.id 0 %}" method="GET">
+            {%csrf_token%}
+            <input type="submit" class="btn btn-outline-secondary" value="クリア">
+        </form>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+{% endblock %}

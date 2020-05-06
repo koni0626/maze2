@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<div class="row">
+    <div class="col-md-2 bg-dark text-white">
+        <p class="text-white"></p>
+        <a href="#"><p class="text-white">練習ステージ</p></a>
+        <a href="{% url 'api_key'%}"><p class="text-white">APIキー</p></a>
+        <a href="#"><p class="text-white">記録</p></a>
+    </div>
+    <div class="col-md-10">
+        <h1>練習問題</h1>
+        <div class="card-columns">
+           {% for record in maze_records %}
+                <div class="card">
+                    <div class="card-body d-flex flex-column">
+                        <img class="card-img-top" src="/media/maze/{{record.maze_img_file}}" alt="Card image cap">
+                        <h4 class="card-title">
+                            <a class="text-dark" href="#">問題{{record.id}}</a>
+                        </h4>
+                        <span class="badge badge-info">
+                            <a class="p-2 text-white" href="{% url 'practice' record.id 0 %}">問題を解く</a>
+                        </span>
+                    </div>
+                </div>
+
+        {% endfor %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}
