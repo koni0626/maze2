@@ -17,7 +17,7 @@ class Mouse2(object):
         self.now_pos_x = history.pos_x
         self.now_pos_y = history.pos_y
         self.now_vec = history.vec
-        full_path = os.path.join("media/maze/", json_file)
+        full_path = os.path.join("maze_media/maze/", json_file)
         with open(full_path) as f:
             self.data = json.load(f)
 

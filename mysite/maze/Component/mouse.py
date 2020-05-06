@@ -17,7 +17,7 @@ class Mouse(object):
         self.data = self.load_map(json_file)
 
     def load_map(self, json_file):
-        full_path = os.path.join("media/maze/", json_file)
+        full_path = os.path.join("maze_media/maze/", json_file)
         with open(full_path) as f:
             data = json.load(f)
         return data

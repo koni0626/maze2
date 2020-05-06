@@ -65,7 +65,7 @@ def index(request):
 def practice(request, maze_id, action=0):
     record = Maze.objects.get(id=maze_id)
     json_file = record.maze_file_name
-    full_path = os.path.join("media/maze/", json_file)
+    full_path = os.path.join("maze_media/maze/", json_file)
     data = None
     with open(full_path) as f:
         data = json.load(f)
