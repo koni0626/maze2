@@ -1,7 +1,6 @@
 .idea
 mysite/db.sqlite3
 Pipfile.lock
-mysite/media
 mysite/pyarticle/__pycache__
 *.pyc
 mysite/mysite_uwsgi.ini

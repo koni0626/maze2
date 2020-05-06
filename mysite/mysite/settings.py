@@ -23,7 +23,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'nydp35%83(b29j8hc%fvn1pjo1%*6249_z%ttv==j@78=g&!!a'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
 
@@ -119,6 +119,12 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
-STATIC_URL = '/static/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-MEDIA_URL = '/media/'
+#STATIC_ROOT = os.path.join(BASE_DIR, 'maze_static')
+STATIC_URL = '/maze_static/'
+
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "maze"+os.sep+"maze_static"),
+]
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'maze_media')
+MEDIA_URL = '/maze_media/'
