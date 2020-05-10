@@ -1,0 +1,168 @@
+{% extends "base_dashboard.html" %}
+{% load static %}
+{% block mainpage %}
+
+<script src="https://code.createjs.com/1.0.0/createjs.min.js"></script>
+<br>
+<canvas id="replay" width="640" height="640"></canvas>
+<script>
+    var maze = null;
+    var player = null;
+    var stage = null;
+    var queue = null;
+    var grid_size = null;
+
+    window.addEventListener("load", init);
+
+    class Player {
+        constructor(grid_size) {
+            this.turn_list = {{turn_list}};
+            this.turn = 0;
+            this.step = 0;
+            this.old_bmp = null;
+            this.grid_size_x = grid_size[0];
+            this.grid_size_y = grid_size[1];
+            this.icon_list = [];
+
+            for(var i = 0; i < queue.getItems().length ;i++) {
+                var bmp = new createjs.Bitmap(queue.getResult(i));
+                bmp.scaleX = this.grid_size_x / bmp.getBounds().width;
+                bmp.scaleY = this.grid_size_y / bmp.getBounds().height;
+                this.icon_list.push(bmp);
+            }
+            this.old_bmp = this.icon_list[0];
+        }
+
+
+        drawIcon(){
+            var turn_num = 0;
+            var step_num = 0;
+            try{
+                step_num = this.turn_list[this.turn].length;
+                if(step_num == 0) {
+                    return null;
+                }
+            }
+            catch(e) {
+                //ターン数オーバー
+                return null;
+            }
+
+            var action = this.turn_list[this.turn][this.step][1];
+            var pos_x = this.turn_list[this.turn][this.step][2];
+            var pos_y = this.turn_list[this.turn][this.step][3];
+            this.step += 1;
+            if(this.step >= step_num) {
+                this.turn += 1;
+                this.step = 0;
+            }
+
+            var bmp = this.icon_list[action];
+
+            if(this.old_bmp != null) {
+                stage.removeChild(this.old_bmp);
+            }
+
+            bmp.x = this.grid_size_x * pos_x;
+            bmp.y = this.grid_size_y * pos_y;
+            this.old_bmp = bmp;
+
+            return bmp;
+        }
+    }
+
+    class Maze {
+        constructor(W, H) {
+            this.maze = {{maze}};
+            this.maze_height = this.maze.length;
+            this.maze_width = this.maze[0].length;
+            this.shape = new createjs.Shape();
+            this.grid_size_x = parseInt(W / this.maze_width);
+            this.grid_size_y = parseInt(H / this.maze_height);
+            console.log(this.grid_size_x);
+            console.log(this.grid_size_y);
+        }
+
+        getGridSize() {
+            return [this.grid_size_x, this.grid_size_y];
+        }
+
+        drawMaze() {
+            for(var y = 0; y < this.maze_height; y++){
+                for(var x = 0; x < this.maze_width; x++) {
+                    if(this.maze[y][x] == 0) {
+                        this.shape.graphics.beginFill("white");
+                    }
+                    else if(this.maze[y][x] == 1) {
+                        this.shape.graphics.beginFill("gray");
+                    }
+                    else if(this.maze[y][x] == 2) {
+                        this.shape.graphics.beginFill("green");
+                    }
+                    else if(this.maze[y][x] == 3) {
+                        this.shape.graphics.beginFill("red");
+                    }
+                    else {
+                        this.shape.graphics.beginFill("white");
+                    }
+                    this.shape.graphics.drawRect(x*this.grid_size_x, y*this.grid_size_y, this.grid_size_x, this.grid_size_y);
+                }
+            }
+            return this.shape;
+        }
+    }
+
+
+
+    function init() {
+        var icon_path = [{"src":"/maze_static/icon/icon_north.png", "id":"0"},
+                         {"src":"/maze_static/icon/icon_east.png", "id":"1"},
+                         {"src":"/maze_static/icon/icon_south.png", "id":"2"},
+                         {"src":"/maze_static/icon/icon_west.png", "id":"3"}];
+
+        queue = new createjs.LoadQueue(true);
+        queue.loadManifest(icon_path, true);
+        queue.on("complete", handleComplete);
+
+        stage = new createjs.Stage("replay");
+        stage.addEventListener("click", handleClick);
+        createjs.Ticker.addEventListener("tick", handleTick);
+        var W = stage.canvas.width;
+        var H = stage.canvas.height;
+
+        maze = new Maze(W, H);
+        grid_size = maze.getGridSize();
+
+        shape = maze.drawMaze();
+
+        stage.addChild(shape);
+
+
+    }
+
+    function handleComplete() {
+        console.log("よばれた");
+        player = new Player(grid_size);
+        var bmp = player.drawIcon(stage);
+        stage.addChild(bmp);
+        stage.update();
+    }
+
+    function handleClick() {
+        var bmp = player.drawIcon(stage);
+        if(bmp == null) {
+            console.log("終了");
+        }
+        else {
+            stage.addChild(bmp);
+            stage.update();
+        }
+    }
+
+    function handleTick(){
+    //    console.log(new Date());
+    }
+
+
+</script>
+{% endblock %}

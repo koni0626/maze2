@@ -1,0 +1,17 @@
+{% extends "base_dashboard.html" %}
+{% load static %}
+{% block mainpage %}
+<h1>実行結果</h1>
+<table class="table">
+
+    {% for record in records %}
+    <tr>
+        <td>{{record.id}}</td>
+        <td><button type="button" class="btn btn-primary" onclick="location.href='{% url 'replay' maze.id record.token %}'">実行結果を見る</button></td>
+        <td>{{record.action_date}}</td>
+        <td><button type="button" class="btn btn-danger" onclick="location.href='{% url 'history_delete' maze.id record.token %}'">実行結果を削除する</button></td>
+    </tr>
+    {% endfor %}
+
+</table>
+{% endblock %}

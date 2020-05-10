@@ -1,3 +1,5 @@
+import os
+import json
 from django.db import models
 from django.contrib.auth.models import User
 
@@ -58,8 +60,13 @@ class Maze(models.Model):
                                 verbose_name="問題のレベル",
                                 help_text="問題のレベル")
 
-    def __str__(self):
-        return self.maze_name
+    def json(self):
+        full_path = os.path.join("maze_media/maze/", self.maze_file_name)
+        data = None
+        with open(full_path) as f:
+            data = json.load(f)
+
+        return data
 
 
 class ApiKeys(models.Model):

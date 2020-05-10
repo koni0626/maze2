@@ -14,6 +14,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 from .Component.mouse2 import Mouse2
 
+
 @csrf_exempt
 def start(request, api_key, map_id):
     # api_keyからユーザーIDを取得する
@@ -42,6 +43,7 @@ def start(request, api_key, map_id):
                                   step=0,
                                   pos_x=maze.start_pos_x,
                                   pos_y=maze.start_pos_y,
+                                  vec=0,
                                   action=0)
         history.save()
     except:
@@ -67,12 +69,38 @@ def sensor(request, token):
 
 
 @csrf_exempt
-def action(request, token, action):
-    mouse = Mouse2(token)
+def turn_right(request, token):
     try:
-        record = mouse.set_action(action)
+        mouse = Mouse2(token)
+        mouse.turn_right()
         mouse.save_history()
     except:
         return JsonResponse({"status": "NG"})
 
     return JsonResponse({"status": "OK"})
+
+
+@csrf_exempt
+def turn_left(request, token):
+    try:
+        mouse = Mouse2(token)
+        mouse.turn_left()
+        mouse.save_history()
+    except:
+        return JsonResponse({"status": "NG"})
+
+    return JsonResponse({"status": "OK"})
+
+
+@csrf_exempt
+def go_straight(request, token):
+    try:
+        mouse = Mouse2(token)
+        mouse.go_straight()
+        mouse.save_history()
+    except:
+        return JsonResponse({"status": "NG"})
+
+    return JsonResponse({"status": "OK"})
+
+

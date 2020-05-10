@@ -4,11 +4,13 @@ import numpy as np
 import hashlib
 import uuid
 from django.contrib import auth
+from django.core import serializers
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
+from django.db.models.aggregates import Max
 from .forms import SignUpForm
-from .models import Maze, ApiKeys
+from .models import Maze, ApiKeys, PracticeHistory
 from .Component.mouse import Mouse
 
 
@@ -44,7 +46,7 @@ def login(request):
             user = form.get_user()
             auth.login(request, user)
             # ここをダッシュボードにする
-            return redirect('dashboard')
+            return redirect('stage')
     else:
         form = AuthenticationForm()
 
@@ -110,11 +112,11 @@ def practice(request, maze_id, action=0):
 
 
 @login_required(login_url='login/')
-def dashboard(request):
+def stage(request):
     # 練習用ステージを選択する
     maze_records = Maze.objects.all()
 
-    return render(request, "dashboard.html", {"maze_records": maze_records})
+    return render(request, "stage.html", {"maze_records": maze_records})
 
 
 @login_required(login_url='login/')
@@ -124,3 +126,41 @@ def api_key(request):
     api_key = record.api_key
     print(api_key)
     return render(request, "api_key.html", {"api_key": api_key})
+
+
+@login_required(login_url='login/')
+def history_list(request, maze_id):
+    user = request.user
+
+    # 表示用の迷路取得
+    maze = Maze.objects.get(id=maze_id)
+    # 重複なくして、トークンを取得する
+    tokens = PracticeHistory.objects.filter(user=user, maze_id=maze_id).order_by('token').values_list('token').distinct()
+    # idは必ず取得しないとエラーになる(djangoの都合)
+    sql = """select id, token, Max(action_date) from maze_practicehistory
+             where user_id=%s and maze_id=%s
+             group by token
+             order by action_date desc;"""
+    params = [user.id, maze_id]
+    records = PracticeHistory.objects.raw(sql, params)
+
+    return render(request, "history_list.html", {"maze": maze, "records": records})
+
+
+@login_required(login_url='login/')
+def history_delete(request, maze_id, token):
+    PracticeHistory.objects.filter(token=token).delete()
+
+    return redirect('history_list', maze_id=maze_id)
+
+
+@login_required(login_url='login/')
+def replay(request, maze_id, token):
+    maze = Maze.objects.get(id=maze_id)
+
+    play_list = PracticeHistory.objects.filter(token=token).order_by('id')
+    turn_list = [[] for i in range(maze.turn)]
+    for play in play_list:
+        turn_list[play.turn].append([play.step, play.vec, play.pos_x, play.pos_y])
+
+    return render(request, "replay.html", {"maze": maze.json(), "turn_list": turn_list})

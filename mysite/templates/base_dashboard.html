@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<div class="row">
+    <div class="col-md-2 bg-dark text-white">
+        <p class="text-white"></p>
+        <a href="{% url 'stage'%}"><p class="text-white">練習ステージ</p></a>
+        <a href="{% url 'api_key'%}"><p class="text-white">APIキー</p></a>
+        <a href="#"><p class="text-white">記録</p></a>
+    </div>
+    <div class="col-md-10">
+       {% block mainpage %}{% endblock %}
+    </div>
+</div>
+
+{% endblock %}

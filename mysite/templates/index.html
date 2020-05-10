@@ -18,7 +18,9 @@ h1 {
             <h1>マイクロマウスシミュレーター</h1>
             <div class="row">
                 <div class="col-md-6">
-                    <iframe width="560" height="315" align="center" src="https://www.youtube.com/embed/CLU1NJ4p8jQ" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    <div class="embed-responsive embed-responsive-16by9">
+                        <iframe class="embed-responsive-item" align="center" src="https://www.youtube.com/embed/CLU1NJ4p8jQ" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    </div>
                 </div>
                 <div class="col-md-6">
                     <p>
@@ -28,8 +30,25 @@ h1 {
                         ResutfulAPIでマイクロマウスを操作します。RestfulAPIの仕様書はこちら。
                     </p>
                     <p>
-                        <button type="button" class="btn btn-primary">アカウントを作成する</button>
-                        <button type="button" class="btn btn-success">ログインする</button>
+                        <button class="btn btn-primary" onclick="location.href='{% url 'signup'%}'">アカウントを作成する</button>
+                        <button type="button" class="btn btn-success" onclick="location.href='{% url 'login'%}'">ログインする</button>
+                    </p>
+                </div>
+            </div>
+            <h1>Restfulでプログラム操作</h1>
+                        <div class="row">
+                <div class="col-md-6">
+                    <div class="embed-responsive embed-responsive-16by9">
+                        <iframe class="embed-responsive-item" align="center" src="https://www.youtube.com/embed/CLU1NJ4p8jQ" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <p>
+                        左にrestfulで動作しているプログラムの動画を入れる。
+                    </p>
+                    <p>
+                        迷路をRestfulを使って、ラズパイマウスを自動実行できます。マイクロマウスのシミュレーションができます。
+                        詳細はこちら。
                     </p>
                 </div>
             </div>

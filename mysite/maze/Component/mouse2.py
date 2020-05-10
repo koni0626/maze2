@@ -28,6 +28,7 @@ class Mouse2(object):
         self.step = history.step + 1
         self.action = history.action
 
+
     def save_history(self):
         history = PracticeHistory(user=self.user,
                                   token=self.token,
@@ -36,6 +37,7 @@ class Mouse2(object):
                                   step=self.step,
                                   pos_x=self.now_pos_x,
                                   pos_y=self.now_pos_y,
+                                  vec = self.now_vec,
                                   action=self.action)
         history.save()
 
@@ -71,80 +73,57 @@ class Mouse2(object):
 
         return [left, front, right]
 
-    def is_collision(self, action):
+    def is_collision(self):
         ret = False
         now_pos_x = self.now_pos_x
         now_pos_y = self.now_pos_y
         now_vec = self.now_vec
-        if action == 1:
-            # 向いている方向に進む
-            if now_vec == 0:
-                "北に進む"
-                now_pos_y -= 1
-            elif now_vec == 1:
-                "東に進む"
-                now_pos_x += 1
-            elif now_vec == 2:
-                "南に進む"
-                now_pos_y += 1
-            elif now_vec == 3:
-                "西に進む"
-                now_pos_x -= 1
-        elif action == 2:
-            "北を向く"
-            now_vec = 0
-        elif action == 3:
-            "東を向く"
-            now_vec = 1
-        elif action == 4:
-            "南を向く"
-            now_vec = 2
-        elif action == 5:
-            "西を向く"
-            now_vec = 3
-        else:
-            # 0 初期化
-            pass
+        # 向いている方向に進む
+        if now_vec == 0:
+            "北に進む"
+            now_pos_y -= 1
+        elif now_vec == 1:
+            "東に進む"
+            now_pos_x += 1
+        elif now_vec == 2:
+            "南に進む"
+            now_pos_y += 1
+        elif now_vec == 3:
+            "西に進む"
+            now_pos_x -= 1
 
         if self.data[now_pos_y][now_pos_x] == 1:
             ret = True
         return ret
 
-    def set_action(self, action):
-        action = int(action)
-        if self.is_collision(action):
-            raise Exception("collision")
-        else:
-            self.action = action
-
-        if action == 1:
-            # 向いている方向に進む
-            if self.now_vec == 0:
-                "北に進む"
-                self.now_pos_y -= 2
-            elif self.now_vec == 1:
-                "東に進む"
-                self.now_pos_x += 2
-            elif self.now_vec == 2:
-                "南に進む"
-                self.now_pos_y += 2
-            elif self.now_vec == 3:
-                "西に進む"
-                self.now_pos_x -= 2
-        elif action == 2:
-            "北を向く"
+    def turn_right(self):
+        self.now_vec += 1
+        if self.now_vec > 3:
             self.now_vec = 0
-        elif action == 3:
-            "東を向く"
-            self.now_vec = 1
-        elif action == 4:
-            "南を向く"
-            self.now_vec = 2
-        elif action == 5:
-            "西を向く"
+        return {"mouse_pos_x": self.now_pos_x, "mouse_pos_y": self.now_pos_y, "mouse_vec": self.now_vec}
+
+    def turn_left(self):
+        self.now_vec -= 1
+        if self.now_vec < 0:
             self.now_vec = 3
-        else:
-            # 0 初期化
-            pass
+        return {"mouse_pos_x": self.now_pos_x, "mouse_pos_y": self.now_pos_y, "mouse_vec": self.now_vec}
+
+    def go_straight(self):
+        if self.is_collision():
+            raise Exception("collision")
+
+        # 向いている方向に進む
+        if self.now_vec == 0:
+            "北に進む"
+            self.now_pos_y -= 2
+        elif self.now_vec == 1:
+            "東に進む"
+            self.now_pos_x += 2
+        elif self.now_vec == 2:
+            "南に進む"
+            self.now_pos_y += 2
+        elif self.now_vec == 3:
+            "西に進む"
+            self.now_pos_x -= 2
 
         return {"mouse_pos_x": self.now_pos_x, "mouse_pos_y": self.now_pos_y, "mouse_vec": self.now_vec}

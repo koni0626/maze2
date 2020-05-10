@@ -13,31 +13,36 @@
 
     <nav class="navbar navbar-expand-md navbar-dark bg-dark sticky-top">
         <div class="container-fluid">
-            <a class="navbar-brand" href="#">マイクロマウスシミュレーター</a>
+            <a class="navbar-brand" href="{% url 'index'%}">マイクロマウスシミュレーター</a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-content" aria-controls="navbar-content" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
             </button>
 
-            <div class="collapse navbar-collapse" id="navbar-content">
-                <ul class="navbar-nav mr-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">APIダウンロード</a>
+            <div class="collapse navbar-collapse navbar-right" id="navbar-content">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item active">
+                        <a class="nav-link" href="#">APIダウンロード(工事中)</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">RestfulAPI仕様書</a>
+                    <li class="nav-item active">
+                        <a class="nav-link" href="#">RestfulAPI仕様書(工事中)</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'dashboard'%}">ダッシュボード</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'signup'%}">サインアップ</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'login'%}">ログイン</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'logout'%}">ログアウト</a>
-                    </li>
+                    {% if user.is_authenticated %}
+                        <li class="nav-item active">
+                            <a class="nav-link" href="{% url 'stage'%}">ダッシュボード</a>
+                        </li>
+                    {% endif %}
+                    {% if not user.is_authenticated %}
+                        <li class="nav-item active">
+                            <a class="nav-link" href="{% url 'signup'%}">サインアップ</a>
+                        </li>
+                        <li class="nav-item active">
+                            <a class="nav-link" href="{% url 'login'%}">ログイン</a>
+                        </li>
+                    {% else %}
+                        <li class="nav-item active">
+                            <a class="nav-link" href="{% url 'logout'%}">ログアウト</a>
+                        </li>
+                    {% endif %}
                 </ul>
             </div>
         </div>
