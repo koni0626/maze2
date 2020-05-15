@@ -89,6 +89,17 @@ class ApiKeys(models.Model):
         return self.api_key
 
 
+class TokenStatus(models.Model):
+    token = models.CharField(max_length=260,
+                             null=False,
+                             verbose_name="トークン",
+                             help_text="トークン")
+
+    status = models.IntegerField(default=0,
+                                 verbose_name="ステータス",
+                                 help_text="ステータス")
+
+
 class PracticeHistory(models.Model):
     user = models.ForeignKey(User,
                              on_delete=models.CASCADE,

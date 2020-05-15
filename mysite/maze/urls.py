@@ -20,5 +20,6 @@ urlpatterns = [
     path('v1/turn_left/<str:token>', rests.turn_left, name='turn_left'),
     path('v1/turn_right/<str:token>', rests.turn_right, name='turn_right'),
     path('v1/go_straight/<str:token>', rests.go_straight, name='go_straight'),
+    path('v1/is_goal/<str:token>', rests.is_goal, name='is_goal'),
 
 ]
