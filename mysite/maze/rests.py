@@ -41,7 +41,7 @@ def adjust_step(mouse):
             mouse.set_next_turn()
             if mouse.is_turn_over():
                 mouse.game_over()
-                mouse.save_history()
+                #mouse.save_history()
                 ret = True
                 msg = {"status": "NG", "message": "本走行終了です"}
             else:

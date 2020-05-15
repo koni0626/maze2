@@ -42,7 +42,7 @@ class Mouse2(object):
     def is_step_over(self):
         print("{}-{}".format(self.step, self.maze_max_step))
         ret = False
-        if self.step >= self.maze_max_step:
+        if self.step >= self.maze_max_step-1:
             ret = True
         return ret
 
