@@ -161,5 +161,4 @@ def replay(request, maze_id, token):
     turn_list = [[] for i in range(maze.turn)]
     for play in play_list:
         turn_list[play.turn].append([play.step, play.vec, play.pos_x, play.pos_y])
-
-    return render(request, "replay.html", {"maze": maze.json(), "turn_list": turn_list})
+    return render(request, "replay.html", {"maze": maze.json(), "turn_list": turn_list, "max_turn": maze.turn, "max_step": maze.step})

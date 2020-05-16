@@ -43,14 +43,14 @@ def adjust_step(mouse):
                 mouse.game_over()
                 #mouse.save_history()
                 ret = True
-                msg = {"status": "NG", "message": "本走行終了です"}
+                msg = {"status": "NG", "message": "本走行終了です", "turn": mouse.turn, "step": mouse.step}
             else:
                 mouse.save_history()
                 ret = True
-                msg = {"status": "NG", "message": "ターン終了です"}
+                msg = {"status": "NG", "message": "ターン終了です", "turn": mouse.turn, "step": mouse.step}
         except Exception as e:
             traceback.print_exc()
-            msg = {"status": "NG"}
+            msg = {"status": "NG", "turn": mouse.turn, "step": mouse.step}
     return ret, msg
 
 
@@ -116,7 +116,7 @@ def sensor(request, token):
     mouse = Mouse2(token)
     sensor = mouse.get_sensor()
 
-    return JsonResponse({"status": "OK", "sensor": sensor})
+    return JsonResponse({"status": "OK", "sensor": sensor, "turn": mouse.turn, "step": mouse.step})
 
 
 @csrf_exempt
@@ -131,7 +131,7 @@ def turn_right(request, token):
         mouse.save_history()
     except Exception as e:
         traceback.print_exc()
-        return JsonResponse({"status": "NG"})
+        return JsonResponse({"status": "NG", "turn": mouse.turn, "step": mouse.step})
 
     _, msg = adjust_step(mouse)
 
@@ -150,7 +150,7 @@ def turn_left(request, token):
         mouse.save_history()
     except Exception as e:
         traceback.print_exc()
-        return JsonResponse({"status": "NG"})
+        return JsonResponse({"status": "NG", "turn": mouse.turn, "step": mouse.step})
 
     _, msg = adjust_step(mouse)
 
@@ -169,10 +169,10 @@ def go_straight(request, token):
         try:
             mouse.game_over()
             mouse.save_history()
-            return JsonResponse({"status": "NG", "message": "壁に衝突しました。ゲームオーバーです"})
+            return JsonResponse({"status": "NG", "message": "壁に衝突しました。ゲームオーバーです", "turn": mouse.turn, "step": mouse.step})
         except Exception as e:
             traceback.print_exc()
-            return JsonResponse({"status": "NG"})
+            return JsonResponse({"status": "NG", "turn": mouse.turn, "step": mouse.step})
 
     ret, msg = adjust_step(mouse)
     if ret:
@@ -183,18 +183,18 @@ def go_straight(request, token):
             if mouse.is_last_turn():
                 mouse.game_clear()
                 mouse.save_history()
-                return JsonResponse({"status": "NG", "message": "ゲームクリアです"})
+                return JsonResponse({"status": "NG", "message": "ゲームクリアです", "turn": mouse.turn, "step": mouse.step})
         except Exception as e:
             traceback.print_exc()
-            return JsonResponse({"status": "NG"})
+            return JsonResponse({"status": "NG", "turn": mouse.turn, "step": mouse.step})
 
     try:
         mouse.save_history()
     except Exception as e:
         traceback.print_exc()
-        return JsonResponse({"status": "NG"})
+        return JsonResponse({"status": "NG", "turn": mouse.turn, "step": mouse.step})
 
-    return JsonResponse({"status": "OK"})
+    return JsonResponse({"status": "OK", "turn": mouse.turn, "step": mouse.step})
 
 
 @csrf_exempt
@@ -209,9 +209,9 @@ def is_goal(request, token):
     try:
         mouse = Mouse2(token)
         if mouse.is_goal():
-            response = {"status": "OK", "goal": 1}
+            response = {"status": "OK", "goal": 1, "turn": mouse.turn, "step": mouse.step}
         else:
-            response = {"status": "OK", "goal": 0}
+            response = {"status": "OK", "goal": 0, "turn": mouse.turn, "step": mouse.step}
     except Exception as e:
         traceback.print_exc()
 

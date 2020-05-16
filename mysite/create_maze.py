@@ -31,7 +31,7 @@ if __name__ == '__main__':
     start_pos = (1, 31)
     goal_pos = (17, 17)
     turn = 5
-    step = 50
+    step = 150
 
     output_dir = os.path.join(MEDIA_ROOT, "maze")
     if not os.path.exists(output_dir):
