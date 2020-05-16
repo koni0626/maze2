@@ -21,6 +21,7 @@
     var label = null;
     var MAX_TURN = {{max_turn}};
     var MAX_STEP = {{max_step}};
+    var turnList = {{turn_list}};
 
     window.addEventListener("load", init);
 
@@ -109,7 +110,7 @@
         label.y = 0;
         stage.addChild(label);
 
-        maze = new Maze(stage, 0, 30, 480, 480, queue, {{maze}}, {{turn_list}});
+        maze = new Maze(stage, 0, 30, 480, 480, queue, {{maze}}, turnList);
         grid_size = maze.getGridSize();
 
         shape = maze.drawMaze();
@@ -188,11 +189,11 @@
         var bmp = maze.drawPlayer(turn,step);
         if(bmp != null) {
             step += 1;
-            if(step >= MAX_STEP) {
+            if(step >= turnList[turn].length) {
                 step = 0;
                 turn += 1;
             }
-            if(turn >= MAX_TURN) {
+            if(turn >= turnList.length) {
                 console.log("終了");
                 createjs.Ticker.removeEventListener("tick", handleTick);
             }

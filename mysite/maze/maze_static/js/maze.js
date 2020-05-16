@@ -63,10 +63,6 @@ class Maze {
             return null;
         }
 
-        var step_max = this.turnList[turn].length;
-        if(step >= step_max) {
-            return null;
-        }
 
         var action = this.turnList[turn][step][1];
         var pos_x = this.turnList[turn][step][2];
