@@ -58,6 +58,16 @@ class Maze {
     }
 
     drawPlayer(turn, step) {
+        var turn_max = this.turnList.length;
+        if(turn >= turn_max) {
+            return null;
+        }
+
+        var step_max = this.turnList[turn].length;
+        if(step >= step_max) {
+            return null;
+        }
+
         var action = this.turnList[turn][step][1];
         var pos_x = this.turnList[turn][step][2];
         var pos_y = this.turnList[turn][step][3];
