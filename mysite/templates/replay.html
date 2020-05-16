@@ -186,22 +186,27 @@
     function handleTick(){
         //ここでステップ数表示
         label.text = "ターン: " + turn + "ステップ: " + step;
-        var bmp = maze.drawPlayer(turn,step);
-        if(bmp != null) {
-            step += 1;
-            if(step >= turnList[turn].length) {
-                step = 0;
-                turn += 1;
-            }
-            if(turn >= turnList.length) {
-                console.log("終了");
-                createjs.Ticker.removeEventListener("tick", handleTick);
-            }
+        try{
+            var bmp = maze.drawPlayer(turn,step);
+            if(bmp != null) {
+                step += 1;
+                if(step >= turnList[turn].length) {
+                    step = 0;
+                    turn += 1;
+                }
+                if(turn >= turnList.length) {
+                    console.log("終了");
+                    createjs.Ticker.removeEventListener("tick", handleTick);
+                }
 
-            stage.addChild(bmp);
-            stage.update();
+                stage.addChild(bmp);
+                stage.update();
+            }
+            else {
+                handleStop();
+            }
         }
-        else {
+        catch(e) {
             handleStop();
         }
     }

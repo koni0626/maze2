@@ -63,7 +63,6 @@ class Maze {
             return null;
         }
 
-
         var action = this.turnList[turn][step][1];
         var pos_x = this.turnList[turn][step][2];
         var pos_y = this.turnList[turn][step][3];
