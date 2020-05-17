@@ -19,15 +19,15 @@ h1 {
             <div class="row">
                 <div class="col-md-6">
                     <div class="embed-responsive embed-responsive-16by9">
-                        <iframe class="embed-responsive-item" align="center" src="https://www.youtube.com/embed/CLU1NJ4p8jQ" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+　　　　　　　　　　　　    <iframe class="embed-responsive-item" align="center"  src="https://www.youtube.com/embed/o6ySWQQWeLs" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
                     </div>
                 </div>
                 <div class="col-md-6">
                     <p>
-                        マイクロマウスのシミュレーションをドット絵ベースの簡単なインターフェースで実験できるシミュレーターβ版です。
-                    </p>
-                    <p>
-                        ResutfulAPIでマイクロマウスを操作します。RestfulAPIの仕様書はこちら。
+                        マイクロマウスシミュレーターは、未知の迷路を走破してゴールへ到達するロボット競技のシミュレーション環境です。
+                        ドット絵ベースの簡単なインターフェースで使いやすさを重視しています。
+                        あなたは、ただ、提供されるクライアントAPIを使ってマウスの自律制御プログラムを作成するだけで、マウスのシミュレーションを行えます。
+                        現時点ではpython3だけで動作します。
                     </p>
                     <p>
                         <button class="btn btn-primary" onclick="location.href='{% url 'signup'%}'">アカウントを作成する</button>
@@ -38,17 +38,13 @@ h1 {
             <h1>Restfulでプログラム操作</h1>
                         <div class="row">
                 <div class="col-md-6">
-                    <div class="embed-responsive embed-responsive-16by9">
-                        <iframe class="embed-responsive-item" align="center" src="https://www.youtube.com/embed/CLU1NJ4p8jQ" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-                    </div>
+                    <img src="{% static 'restimg.jpg' %}" class="img-fluid">
                 </div>
                 <div class="col-md-6">
                     <p>
-                        左にrestfulで動作しているプログラムの動画を入れる。
-                    </p>
-                    <p>
-                        迷路をRestfulを使って、ラズパイマウスを自動実行できます。マイクロマウスのシミュレーションができます。
-                        詳細はこちら。
+                        Restfulを使ってマウスを自律制御するプログラムを作成して、迷路をクリアします。
+                        Restfulのインターフェースは簡単。pythonで動作するので、必要なライブラリはpipでインストールだけすればOK。
+                        <a href="https://www.osumoi-stdio.com/pyarticle/book/22/1">詳細はこちら。</a>
                     </p>
                 </div>
             </div>
