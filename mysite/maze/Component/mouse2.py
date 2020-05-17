@@ -7,6 +7,9 @@ from maze.models import Maze
 from maze.models import PracticeHistory
 from maze.models import TokenStatus
 
+class MouseError(Exception):
+    pass
+
 class Mouse2(object):
     def __init__(self, token):
         max_id = PracticeHistory.objects.filter(token=token).aggregate(Max('id'))
@@ -42,7 +45,7 @@ class Mouse2(object):
     def is_step_over(self):
         print("{}-{}".format(self.step, self.maze_max_step))
         ret = False
-        if self.step >= self.maze_max_step-1:
+        if self.step >= self.maze_max_step:
             ret = True
         return ret
 
@@ -56,7 +59,7 @@ class Mouse2(object):
         self.turn += 1
         self.now_pos_x = self.maze.start_pos_x
         self.now_pos_y = self.maze.start_pos_y
-        self.vec = 0
+        self.now_vec = 0
 
     def save_history(self):
         if self.step >= self.maze.step:
@@ -132,6 +135,11 @@ class Mouse2(object):
 
     def turn_right(self):
         self.step += 1
+        if self.is_step_over():
+            raise MouseError("step over", 1)
+        if self.is_turn_over():
+            raise MouseError("turn over", 2)
+
         self.now_vec += 1
         if self.now_vec > 3:
             self.now_vec = 0
@@ -139,6 +147,11 @@ class Mouse2(object):
 
     def turn_left(self):
         self.step += 1
+        if self.is_step_over():
+            raise MouseError("step over", 1)
+        if self.is_turn_over():
+            raise MouseError("turn over", 2)
+
         self.now_vec -= 1
         if self.now_vec < 0:
             self.now_vec = 3
@@ -146,8 +159,12 @@ class Mouse2(object):
 
     def go_straight(self):
         self.step += 1
+        if self.is_step_over():
+            raise MouseError("step over", 1)
+        if self.is_turn_over():
+            raise MouseError("turn over", 2)
         if self.is_collision():
-            return False
+            raise MouseError("collision", 3)
 
         # 向いている方向に進む
         if self.now_vec == 0:
@@ -162,8 +179,6 @@ class Mouse2(object):
         elif self.now_vec == 3:
             "西に進む"
             self.now_pos_x -= 2
-
-        return True
 
     def is_goal(self):
         ret = False

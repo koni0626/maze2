@@ -13,7 +13,7 @@ from .models import TokenStatus
 from django.http.response import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.db import transaction
-from .Component.mouse2 import Mouse2
+from .Component.mouse2 import Mouse2, MouseError
 
 
 def token_check(token):
@@ -22,9 +22,10 @@ def token_check(token):
     try:
         token_status = TokenStatus.objects.get(token=token)
         if token_status.status == 1:
-            result = {"status": "NG", "error_code": 100, "message": "ゲームオーバーです"}
             ret = False
+            result = {"status": "NG", "error_code": 100, "message": "ゲームオーバーです"}
         elif token_status.status == 2:
+            ret = False
             result = {"status": "NG", "error_code": 200, "message": "すでにゴールしています"}
     except Exception as e:
         result = {"status": "NG", "error_code": 2, "message": "tokenが不正です"}
@@ -33,24 +34,32 @@ def token_check(token):
     return ret, result
 
 
+def reset_step(mouse):
+    try:
+        mouse.set_next_turn()
+        if mouse.is_turn_over():
+            mouse.game_over()
+        else:
+            mouse.save_history()
+    except Exception as e:
+        traceback.print_exc()
+
+
 def adjust_step(mouse):
-    ret = False
-    msg = {"status": "OK", "error_code": 0, "message": "正常", "turn": mouse.turn, "step": mouse.step}
     if mouse.is_step_over():
         try:
             mouse.set_next_turn()
             if mouse.is_turn_over():
                 mouse.game_over()
-                ret = True
-                msg = {"status": "NG", "error_code": 400, "message": "本走行終了です", "turn": mouse.turn, "step": mouse.step}
+                #ret = True
+                #msg = {"status": "NG", "error_code": 400, "message": "本走行終了です", "turn": mouse.turn, "step": mouse.step}
             else:
                 mouse.save_history()
-                ret = True
-                msg = {"status": "NG", "error_code": 300, "message": "ターン終了です", "turn": mouse.turn, "step": mouse.step}
+                #ret = True
+                #msg = {"status": "NG", "error_code": 300, "message": "ターン終了です", "turn": mouse.turn, "step": mouse.step}
         except Exception as e:
             traceback.print_exc()
-            msg = {"status": "NG", "error_code": 1000, "message": "サーバで例外が発生しました"}
-    return ret, msg
+            #msg = {"status": "NG", "error_code": 1000, "message": "サーバで例外が発生しました"}
 
 
 @csrf_exempt
@@ -129,13 +138,19 @@ def turn_right(request, token):
         mouse = Mouse2(token)
         mouse.turn_right()
         mouse.save_history()
+    except MouseError as e:
+        if e.args[1] == 1:
+            adjust_step(mouse)
+            return JsonResponse({"status": "NG", "error_code": 300, "message": "ステップオーバーです", "turn": mouse.turn, "step": mouse.step})
+        elif e.args[1] == 2:
+            return JsonResponse({"status": "NG", "error_code": 400, "message": "ターンオーバーです", "turn": mouse.turn, "step": mouse.step})
     except Exception as e:
         traceback.print_exc()
         return JsonResponse({"status": "NG", "error_code": 1000, "message": "サーバで例外が発生しました"})
 
-    _, msg = adjust_step(mouse)
+    adjust_step(mouse)
 
-    return JsonResponse(msg)
+    return JsonResponse({"status": "OK", "error_code": 0, "message": "右に回転しました", "turn": mouse.turn, "step": mouse.step})
 
 
 @csrf_exempt
@@ -148,13 +163,19 @@ def turn_left(request, token):
         mouse = Mouse2(token)
         mouse.turn_left()
         mouse.save_history()
+    except MouseError as e:
+        if e.args[1] == 1:
+            adjust_step(mouse)
+            return JsonResponse({"status": "NG", "error_code": 300, "message": "ステップオーバーです", "turn": mouse.turn, "step": mouse.step})
+        elif e.args[1] == 2:
+            return JsonResponse({"status": "NG", "error_code": 400, "message": "ターンオーバーです", "turn": mouse.turn, "step": mouse.step})
     except Exception as e:
         traceback.print_exc()
         return JsonResponse({"status": "NG", "error_code": 1000, "message": "サーバで例外が発生しました"})
 
-    _, msg = adjust_step(mouse)
+    adjust_step(mouse)
 
-    return JsonResponse(msg)
+    return JsonResponse({"status": "OK", "error_code": 0, "message": "左に回転しました", "turn": mouse.turn, "step": mouse.step})
 
 
 @csrf_exempt
@@ -164,19 +185,23 @@ def go_straight(request, token):
         return JsonResponse(result)
 
     mouse = Mouse2(token)
-    if not mouse.go_straight():
-        # 衝突した
-        try:
-            mouse.game_over()
-            mouse.save_history()
+    try:
+        mouse.go_straight()
+        mouse.save_history()
+    except MouseError as e:
+        if e.args[1] == 1:
+            adjust_step(mouse)
+            return JsonResponse({"status": "NG", "error_code": 300, "message": "ステップオーバーです", "turn": mouse.turn, "step": mouse.step})
+        elif e.args[1] == 2:
+            return JsonResponse({"status": "NG", "error_code": 400, "message": "ターンオーバーです", "turn": mouse.turn, "step": mouse.step})
+        else:
+            reset_step(mouse)
             return JsonResponse({"status": "NG", "error_code": 100, "message": "壁に衝突しました。ゲームオーバーです", "turn": mouse.turn, "step": mouse.step})
-        except Exception as e:
-            traceback.print_exc()
-            return JsonResponse({"status": "NG", "error_code": 1000, "message": "サーバで例外が発生しました"})
+    except Exception as e:
+        traceback.print_exc()
+        return JsonResponse({"status": "NG", "error_code": 1000, "message": "サーバで例外が発生しました"})
 
-    ret, msg = adjust_step(mouse)
-    if ret:
-        return JsonResponse(msg)
+    adjust_step(mouse)
 
     if mouse.is_goal():
         try:
@@ -188,13 +213,7 @@ def go_straight(request, token):
             traceback.print_exc()
             return JsonResponse({"status": "NG", "error_code": 1000, "message": "サーバで例外が発生しました"})
 
-    try:
-        mouse.save_history()
-    except Exception as e:
-        traceback.print_exc()
-        return JsonResponse({"status": "NG", "error_code": 1000, "message": "サーバで例外が発生しました"})
-
-    return JsonResponse({"status": "OK", "error_code": 0, "message": "正常", "turn": mouse.turn, "step": mouse.step})
+    return JsonResponse({"status": "OK", "error_code": 0, "message": "直進しました", "turn": mouse.turn, "step": mouse.step})
 
 
 @csrf_exempt
@@ -209,9 +228,9 @@ def is_goal(request, token):
     try:
         mouse = Mouse2(token)
         if mouse.is_goal():
-            response = {"status": "OK", "error_code": 0, "message": "ゴールしています", "goal": 1, "turn": mouse.turn, "step": mouse.step}
+            response = {"status": "OK", "error_code": 0, "message": "ゴール位置にいます", "goal": 1, "turn": mouse.turn, "step": mouse.step}
         else:
-            response = {"status": "OK", "error_code": 0, "message": "ゴールしていません", "goal": 0, "turn": mouse.turn, "step": mouse.step}
+            response = {"status": "OK", "error_code": 0, "message": "ゴール位置にいません", "goal": 0, "turn": mouse.turn, "step": mouse.step}
     except Exception as e:
         traceback.print_exc()
         return JsonResponse({"status": "NG", "error_code": 1000, "message": "サーバで例外が発生しました"})
