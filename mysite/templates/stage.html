@@ -10,11 +10,13 @@
                 <h4 class="card-title">
                     <a class="text-dark" href="#">問題{{record.id}}</a>
                 </h4>
+                <!--
                 <span class="badge badge-info">
                     <a class="p-2 text-white" href="{% url 'practice' record.id 0 %}">問題を解く</a>
                 </span>
+                -->
                 <span class="badge badge-primary">
-                    <a class="p-2 text-white" href="{% url 'history_list' record.id %}">棋譜を見る</a>
+                    <a class="p-2 text-white" href="{% url 'history_list' record.id %}">実行結果を見る</a>
                 </span>
             </div>
         </div>

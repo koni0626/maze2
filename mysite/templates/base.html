@@ -21,10 +21,7 @@
             <div class="collapse navbar-collapse navbar-right" id="navbar-content">
                 <ul class="navbar-nav ml-auto">
                     <li class="nav-item active">
-                        <a class="nav-link" href="#">APIダウンロード(工事中)</a>
-                    </li>
-                    <li class="nav-item active">
-                        <a class="nav-link" href="#">RestfulAPI仕様書(工事中)</a>
+                        <a class="nav-link" href="https://www.osumoi-stdio.com/pyarticle/book/22/1">遊び方</a>
                     </li>
                     {% if user.is_authenticated %}
                         <li class="nav-item active">
@@ -33,7 +30,7 @@
                     {% endif %}
                     {% if not user.is_authenticated %}
                         <li class="nav-item active">
-                            <a class="nav-link" href="{% url 'signup'%}">サインアップ</a>
+                            <a class="nav-link" href="{% url 'signup'%}">ユーザ登録</a>
                         </li>
                         <li class="nav-item active">
                             <a class="nav-link" href="{% url 'login'%}">ログイン</a>
