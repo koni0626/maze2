@@ -22,12 +22,12 @@ def token_check(token):
     try:
         token_status = TokenStatus.objects.get(token=token)
         if token_status.status == 1:
-            result = {"status": "NG", "message": "ゲームオーバーです"}
+            result = {"status": "NG", "error_code": 100, "message": "ゲームオーバーです"}
             ret = False
         elif token_status.status == 2:
-            result = {"status": "NG", "message": "すでにゴールしています"}
+            result = {"status": "NG", "error_code": 200, "message": "すでにゴールしています"}
     except Exception as e:
-        result = {"status": "NG", "message": "tokenが不正です"}
+        result = {"status": "NG", "error_code": 2, "message": "tokenが不正です"}
         ret = False
 
     return ret, result
@@ -35,22 +35,21 @@ def token_check(token):
 
 def adjust_step(mouse):
     ret = False
-    msg = {"status": "OK"}
+    msg = {"status": "OK", "error_code": 0, "message": "正常", "turn": mouse.turn, "step": mouse.step}
     if mouse.is_step_over():
         try:
             mouse.set_next_turn()
             if mouse.is_turn_over():
                 mouse.game_over()
-                #mouse.save_history()
                 ret = True
-                msg = {"status": "NG", "message": "本走行終了です", "turn": mouse.turn, "step": mouse.step}
+                msg = {"status": "NG", "error_code": 400, "message": "本走行終了です", "turn": mouse.turn, "step": mouse.step}
             else:
                 mouse.save_history()
                 ret = True
-                msg = {"status": "NG", "message": "ターン終了です", "turn": mouse.turn, "step": mouse.step}
+                msg = {"status": "NG", "error_code": 300, "message": "ターン終了です", "turn": mouse.turn, "step": mouse.step}
         except Exception as e:
             traceback.print_exc()
-            msg = {"status": "NG", "turn": mouse.turn, "step": mouse.step}
+            msg = {"status": "NG", "error_code": 1000, "message": "サーバで例外が発生しました"}
     return ret, msg
 
 
@@ -61,14 +60,14 @@ def start(request, api_key, map_id):
         api_key_record = ApiKeys.objects.get(api_key=api_key)
         user = api_key_record.user
     except ApiKeys.DoesNotExist:
-        ret = {"status": "NG", "message": "api_keyが不正です"}
+        ret = {"status": "NG", "error_code": 1, "message": "API_KEYが不正です"}
         return JsonResponse(ret)
 
     # マップIDからマップの情報を取得する
     try:
         maze = Maze.objects.get(id=map_id)
     except Maze.DoesNotExist:
-        ret = {"status": "NG", "message": "map_idが不正です"}
+        ret = {"status": "NG", "error_code": 3, "message": "map_idが不正です"}
         return JsonResponse(ret)
 
     # token生成
@@ -92,6 +91,7 @@ def start(request, api_key, map_id):
             token_status.save()
 
             ret = {"status": "OK",
+                   "error_code": 0,
                    "token": token,
                    "start_pos": (maze.start_pos_x, maze.start_pos_y),
                    "goal_pos": (maze.goal_pos_x, maze.goal_pos_y),
@@ -100,7 +100,7 @@ def start(request, api_key, map_id):
 
     except Exception as e:
         traceback.print_exc()
-        ret = {"status": "NG", "message": "記録に失敗しました"}
+        ret = {"status": "NG", "error_code": 1000, "message": "サーバで例外が発生しました"}
 
     return JsonResponse(ret)
 
@@ -116,7 +116,7 @@ def sensor(request, token):
     mouse = Mouse2(token)
     sensor = mouse.get_sensor()
 
-    return JsonResponse({"status": "OK", "sensor": sensor, "turn": mouse.turn, "step": mouse.step})
+    return JsonResponse({"status": "OK", "error_code": 0, "message": "センサー情報を取得しました", "sensor": sensor, "turn": mouse.turn, "step": mouse.step})
 
 
 @csrf_exempt
@@ -131,7 +131,7 @@ def turn_right(request, token):
         mouse.save_history()
     except Exception as e:
         traceback.print_exc()
-        return JsonResponse({"status": "NG", "turn": mouse.turn, "step": mouse.step})
+        return JsonResponse({"status": "NG", "error_code": 1000, "message": "サーバで例外が発生しました"})
 
     _, msg = adjust_step(mouse)
 
@@ -150,7 +150,7 @@ def turn_left(request, token):
         mouse.save_history()
     except Exception as e:
         traceback.print_exc()
-        return JsonResponse({"status": "NG", "turn": mouse.turn, "step": mouse.step})
+        return JsonResponse({"status": "NG", "error_code": 1000, "message": "サーバで例外が発生しました"})
 
     _, msg = adjust_step(mouse)
 
@@ -169,10 +169,10 @@ def go_straight(request, token):
         try:
             mouse.game_over()
             mouse.save_history()
-            return JsonResponse({"status": "NG", "message": "壁に衝突しました。ゲームオーバーです", "turn": mouse.turn, "step": mouse.step})
+            return JsonResponse({"status": "NG", "error_code": 100, "message": "壁に衝突しました。ゲームオーバーです", "turn": mouse.turn, "step": mouse.step})
         except Exception as e:
             traceback.print_exc()
-            return JsonResponse({"status": "NG", "turn": mouse.turn, "step": mouse.step})
+            return JsonResponse({"status": "NG", "error_code": 1000, "message": "サーバで例外が発生しました"})
 
     ret, msg = adjust_step(mouse)
     if ret:
@@ -183,18 +183,18 @@ def go_straight(request, token):
             if mouse.is_last_turn():
                 mouse.game_clear()
                 mouse.save_history()
-                return JsonResponse({"status": "NG", "message": "ゲームクリアです", "turn": mouse.turn, "step": mouse.step})
+                return JsonResponse({"status": "OK", "error_code": 0,  "message": "ゲームクリアです", "turn": mouse.turn, "step": mouse.step})
         except Exception as e:
             traceback.print_exc()
-            return JsonResponse({"status": "NG", "turn": mouse.turn, "step": mouse.step})
+            return JsonResponse({"status": "NG", "error_code": 1000, "message": "サーバで例外が発生しました"})
 
     try:
         mouse.save_history()
     except Exception as e:
         traceback.print_exc()
-        return JsonResponse({"status": "NG", "turn": mouse.turn, "step": mouse.step})
+        return JsonResponse({"status": "NG", "error_code": 1000, "message": "サーバで例外が発生しました"})
 
-    return JsonResponse({"status": "OK", "turn": mouse.turn, "step": mouse.step})
+    return JsonResponse({"status": "OK", "error_code": 0, "message": "正常", "turn": mouse.turn, "step": mouse.step})
 
 
 @csrf_exempt
@@ -202,17 +202,18 @@ def is_goal(request, token):
     try:
         token_check(token)
     except Exception as e:
-        return JsonResponse({"status": "OK", "goal": 0})
+        return JsonResponse({"status": "NG", "error_code": 1000, "message": "サーバで例外が発生しました"})
 
     # 履歴の最終状態が(7,7)かどうかを見ればいい。
     response = {"status": "NG"}
     try:
         mouse = Mouse2(token)
         if mouse.is_goal():
-            response = {"status": "OK", "goal": 1, "turn": mouse.turn, "step": mouse.step}
+            response = {"status": "OK", "error_code": 0, "message": "ゴールしています", "goal": 1, "turn": mouse.turn, "step": mouse.step}
         else:
-            response = {"status": "OK", "goal": 0, "turn": mouse.turn, "step": mouse.step}
+            response = {"status": "OK", "error_code": 0, "message": "ゴールしていません", "goal": 0, "turn": mouse.turn, "step": mouse.step}
     except Exception as e:
         traceback.print_exc()
+        return JsonResponse({"status": "NG", "error_code": 1000, "message": "サーバで例外が発生しました"})
 
     return JsonResponse(response)
